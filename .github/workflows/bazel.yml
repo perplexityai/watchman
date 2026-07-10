@@ -82,6 +82,23 @@ jobs:
           path: artifacts/x86_64-windows-gnu/watchman.exe
           if-no-files-found: error
 
+  build-windows-host:
+    name: Build Windows binary on Windows
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          cache-save: ${{ github.event_name != 'pull_request' }}
+          disk-cache: ${{ github.workflow }}-windows-x64
+          repository-cache: true
+
+      - name: Build Windows distribution
+        run: bazel build //:watchman-x86_64-windows-gnu
+
   smoke:
     name: Smoke test (${{ matrix.triple }})
     needs: build
