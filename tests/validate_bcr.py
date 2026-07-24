@@ -14,12 +14,10 @@ MODULES = ROOT / "bcr" / "modules"
 FORBIDDEN_MODULE_CALLS = (
     "archive_override(",
     "git_override(",
-    "http_archive(",
     "local_path_override(",
     "multiple_version_override(",
     "register_toolchains(",
     "single_version_override(",
-    "use_repo_rule(",
 )
 
 
@@ -91,7 +89,11 @@ def main() -> int:
     available: dict[str, set[str]] = {}
     dependencies: dict[str, list[tuple[str, str]]] = {}
 
-    for module_dir in sorted(path for path in MODULES.iterdir() if path.is_dir()):
+    for module_dir in sorted(
+        path
+        for path in MODULES.iterdir()
+        if path.is_dir() and (path / "metadata.json").is_file()
+    ):
         metadata = json.loads((module_dir / "metadata.json").read_text())
         versions = set(metadata["versions"])
         available[module_dir.name] = versions

@@ -1,8 +1,7 @@
 # Watchman Bazel overlay
 
-Hand-maintained Bazel Central Registry overlays for
-[Watchman](https://github.com/facebook/watchman) and its unregistered
-EdenCommon and fb303 dependencies.
+Hand-maintained Bazel Central Registry overlay for
+[Watchman](https://github.com/facebook/watchman).
 
 The intended consumer API is:
 
@@ -19,16 +18,14 @@ bazel build @watchman//:watchman
 
 ## BCR modules
 
-Ready-to-submit registry entries live under [`bcr/modules`](bcr/modules):
+The ready-to-submit `watchman` registry entry lives under
+[`bcr/modules/watchman`](bcr/modules/watchman). It points at the upstream
+Watchman archive, layers Bazel files onto the extracted tree, then applies
+source patches.
 
-- `fb303`
-- `edencommon`
-- `watchman`
-
-They must reach BCR in that order because BCR modules may depend only on
-modules already present in BCR. Each entry points at its upstream source
-archive, layers `MODULE.bazel` and `BUILD.bazel` onto the extracted tree, then
-applies source patches.
+EdenCommon and fb303 remain private implementation repositories created by the
+Watchman module. Their BUILD files and source patches ship inside the Watchman
+overlay; consumers need only one `bazel_dep`.
 
 The published modules use the consumer's C++ toolchain. They do not register
 the development harness's LLVM toolchain or apply root-only module overrides.

@@ -1,9 +1,0 @@
-{
-    "url": "https://github.com/facebook/fb303/archive/e8b0021954f2328b9b954687b2a94dbae100fd17.tar.gz",
-    "integrity": "sha256-k2Wq8bkEasPx7CTlLu3HhwT+mhBof9dY+AoZ4efnGiE=",
-    "strip_prefix": "fb303-e8b0021954f2328b9b954687b2a94dbae100fd17",
-    "overlay": {
-        "BUILD.bazel": "sha256-D2TjKldOO9vgGPAQztM1GgMHsROFCSha9zmeU6FfHJ0=",
-        "MODULE.bazel": "sha256-G0xnj1Xk+bDt7rUEIKhiiI7qS8jiyLP2WOBzS206PzU="
-    }
-}

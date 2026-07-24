@@ -1,4 +1,4 @@
-# Patch EdenCommon for MinGW builds used by Watchman.
+# Patch private EdenCommon source for MinGW builds used by Watchman.
 diff --git a/eden/common/utils/UserInfo.cpp b/eden/common/utils/UserInfo.cpp
 --- a/eden/common/utils/UserInfo.cpp
 +++ b/eden/common/utils/UserInfo.cpp

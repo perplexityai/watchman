@@ -1,7 +1,5 @@
-# Hand-maintained Bazel overlay for the EdenCommon snapshot used by Watchman.
+# Private EdenCommon BUILD file used by the Watchman module.
 load("@rules_cc//cc:defs.bzl", "cc_library")
-
-exports_files(["BUILD.bazel"])
 
 package(default_visibility = ["//visibility:public"])
 
