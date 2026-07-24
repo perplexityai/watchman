@@ -1,0 +1,18 @@
+{
+    "homepage": "https://github.com/facebookexperimental/edencommon",
+    "maintainers": [
+        {
+            "email": "holevietlong@gmail.com",
+            "github": "longlho",
+            "github_user_id": 198255,
+            "name": "Long Ho"
+        }
+    ],
+    "repository": [
+        "github:facebookexperimental/edencommon"
+    ],
+    "versions": [
+        "2026.07.06.00.bcr.1"
+    ],
+    "yanked_versions": {}
+}

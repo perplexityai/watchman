@@ -13,6 +13,31 @@ permissions:
   contents: read
 
 jobs:
+  bcr-overlay:
+    name: Validate BCR overlay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          cache-save: ${{ github.event_name != 'pull_request' }}
+          disk-cache: ${{ github.workflow }}-bcr-overlay
+          repository-cache: true
+
+      - name: Validate registry metadata
+        run: python3 tests/validate_bcr.py
+
+      - name: Build as BCR dependency
+        working-directory: tests/bcr
+        run: |
+          bazel build \
+            --registry="file://$GITHUB_WORKSPACE/bcr" \
+            --registry=https://bcr.bazel.build \
+            @watchman//:watchman
+
   build:
     name: Build binaries
     runs-on: ubuntu-24.04

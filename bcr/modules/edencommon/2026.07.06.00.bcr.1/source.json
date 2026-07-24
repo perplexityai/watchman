@@ -1,0 +1,13 @@
+{
+    "url": "https://github.com/facebookexperimental/edencommon/archive/9bbfab31b921d0044ef1eaed36e2b660d75f7bc4.tar.gz",
+    "integrity": "sha256-6UzjgZ9OAV1zKyy2pn5EtfP/x95VGCZdzrm3O7z1oWo=",
+    "strip_prefix": "edencommon-9bbfab31b921d0044ef1eaed36e2b660d75f7bc4",
+    "overlay": {
+        "BUILD.bazel": "sha256-6nhZTFP3SpY7zOFP0DhVZoq+Yn4kbT4LMTcHiwe7bm4=",
+        "MODULE.bazel": "sha256-DApOvvrxf3RjMqENJ84MG2zQTmZOn1n4Di4c5q/4bi0="
+    },
+    "patch_strip": 1,
+    "patches": {
+        "edencommon-mingw.patch": "sha256-mAuy+h4aXz5lnU8VlRhk8CHFJZLNG+p9lc/wBWIZ8gA="
+    }
+}

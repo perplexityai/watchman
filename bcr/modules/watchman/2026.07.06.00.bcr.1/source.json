@@ -1,0 +1,13 @@
+{
+    "url": "https://github.com/facebook/watchman/archive/refs/tags/v2026.07.06.00.tar.gz",
+    "integrity": "sha256-5G72uY4OpCAe9gPmKOrHgWVXOozEusEsdM2rgTxF+fc=",
+    "strip_prefix": "watchman-2026.07.06.00",
+    "overlay": {
+        "BUILD.bazel": "sha256-SKSsmMYr8SyxBgM9wWgv6GNw232NerOyyZFOhoXmsKs=",
+        "MODULE.bazel": "sha256-yjNdg86pnNA0wJtimH89thivOhlhWaCwTid4DoMxO4Q="
+    },
+    "patch_strip": 1,
+    "patches": {
+        "watchman-bazel.patch": "sha256-2uENVa+QRGsEFVegb22p3LrPQMcCRux36KKGdphdrac="
+    }
+}

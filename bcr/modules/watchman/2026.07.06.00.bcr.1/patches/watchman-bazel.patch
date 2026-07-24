@@ -1,3 +1,4 @@
+# Patch upstream Watchman for portable Bazel builds.
 diff --git a/watchman/ClientContext.h b/watchman/ClientContext.h
 --- a/watchman/ClientContext.h
 +++ b/watchman/ClientContext.h

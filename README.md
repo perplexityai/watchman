@@ -1,21 +1,53 @@
-# rules_watchman
+# Watchman Bazel overlay
 
-Hermetic Bazel build for Watchman `v2026.07.06.00` using
-[`hermetic-llvm`](https://github.com/hermeticbuild/hermetic-llvm).
+Hand-maintained Bazel Central Registry overlays for
+[Watchman](https://github.com/facebook/watchman) and its unregistered
+EdenCommon and fb303 dependencies.
 
-Supported targets:
+The intended consumer API is:
+
+```starlark
+bazel_dep(
+    name = "watchman",
+    version = "2026.07.06.00.bcr.1",
+)
+```
+
+```sh
+bazel build @watchman//:watchman
+```
+
+## BCR modules
+
+Ready-to-submit registry entries live under [`bcr/modules`](bcr/modules):
+
+- `fb303`
+- `edencommon`
+- `watchman`
+
+They must reach BCR in that order because BCR modules may depend only on
+modules already present in BCR. Each entry points at its upstream source
+archive, layers `MODULE.bazel` and `BUILD.bazel` onto the extracted tree, then
+applies source patches.
+
+The published modules use the consumer's C++ toolchain. They do not register
+the development harness's LLVM toolchain or apply root-only module overrides.
+Initial overlays support Bazel 7 and 8. Several inherited BCR dependencies
+still use native C++ rules removed in Bazel 9; the development harness patches
+those dependencies until fixed BCR revisions exist.
+
+BCR presubmit covers Linux x64, Linux arm64, and macOS arm64. Windows remains
+available through the hermetic MinGW development target below.
+
+## Development builds
+
+This repository remains a hermetic build and release harness. It uses
+[`hermetic-llvm`](https://github.com/hermeticbuild/hermetic-llvm) to build:
 
 - Linux x64 (`x86_64-linux-gnu`)
 - Linux arm64 (`aarch64-linux-gnu`)
 - Darwin arm64 (`aarch64-apple-darwin`)
 - Windows x64 (`x86_64-windows-gnu`)
-
-Linux binaries statically link libc++ and third-party dependencies; glibc remains
-dynamic. Darwin uses the Apple system runtime and frameworks. Windows uses
-Clang, MinGW-w64, UCRT, and libc++; it does not use the MSVC ABI. The optional
-`should_deelevate_on_startup` hook is disabled in the Windows Bazel build.
-
-Build any supported target from a registered host:
 
 ```sh
 bazel build //:watchman-x86_64-linux-gnu
@@ -24,13 +56,13 @@ bazel build //:watchman-aarch64-apple-darwin
 bazel build //:watchman-x86_64-windows-gnu
 ```
 
-Build every distribution binary from one host:
+Build every distribution binary:
 
 ```sh
 bazel build //:dist
 ```
 
-Run the filesystem smoke test with a binary on its matching host:
+Run a smoke test on its matching host:
 
 ```sh
 tests/watchman_smoke_test.sh /path/to/watchman
@@ -40,16 +72,13 @@ tests/watchman_smoke_test.sh /path/to/watchman
 tests/watchman_smoke_test.ps1 -Watchman C:\path\to\watchman.exe
 ```
 
-## Development
-
-Install the development hooks once after cloning:
+Install development hooks once after cloning:
 
 ```sh
 npm ci
 ```
 
-Commit messages and pull request titles use Conventional Commits, for example
-`feat: add a target` or `fix: correct state directory resolution`.
+Commit messages and pull request titles use Conventional Commits.
 
 ## License
 

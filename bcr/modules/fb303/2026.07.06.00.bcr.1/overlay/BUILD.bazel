@@ -1,4 +1,7 @@
+# Hand-maintained Bazel overlay for the fb303 snapshot used by Watchman.
 load("@rules_cc//cc:defs.bzl", "cc_library")
+
+exports_files(["BUILD.bazel"])
 
 package(default_visibility = ["//visibility:public"])
 

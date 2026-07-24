@@ -1,0 +1,18 @@
+{
+    "homepage": "https://github.com/facebook/fb303",
+    "maintainers": [
+        {
+            "email": "holevietlong@gmail.com",
+            "github": "longlho",
+            "github_user_id": 198255,
+            "name": "Long Ho"
+        }
+    ],
+    "repository": [
+        "github:facebook/fb303"
+    ],
+    "versions": [
+        "2026.07.06.00.bcr.1"
+    ],
+    "yanked_versions": {}
+}

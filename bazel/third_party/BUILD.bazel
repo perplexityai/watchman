@@ -1,8 +1,0 @@
-exports_files(
-    [
-        "edencommon.BUILD.bazel",
-        "fb303.BUILD.bazel",
-        "watchman.BUILD.bazel",
-    ],
-    visibility = ["//visibility:public"],
-)

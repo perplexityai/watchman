@@ -7,7 +7,7 @@
   "initial-version": "0.1.0",
   "packages": {
     ".": {
-      "package-name": "rules_watchman"
+      "package-name": "watchman"
     }
   }
 }
