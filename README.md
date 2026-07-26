@@ -36,6 +36,17 @@ those dependencies until fixed BCR revisions exist.
 BCR presubmit covers Linux x64, Linux arm64, and macOS arm64. Windows remains
 available through the hermetic MinGW development target below.
 
+Maintainers publish a checked-in overlay with:
+
+```sh
+gh workflow run publish-bcr.yml \
+  -f version=2026.07.06.00.bcr.1
+```
+
+The workflow validates the overlay, stages it in
+`perplexityai/bazel-central-registry`, and opens the upstream BCR pull request.
+It requires the `BCR_PUBLISH_TOKEN` Actions secret used by `gazelle_py`.
+
 ## Development builds
 
 This repository remains a hermetic build and release harness. It uses
