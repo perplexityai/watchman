@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - uses: bazel-contrib/setup-bazel@0.19.0
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
         with:
           bazelisk-cache: true
           cache-save: ${{ github.event_name != 'pull_request' }}
@@ -43,9 +43,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - uses: bazel-contrib/setup-bazel@0.19.0
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
         with:
           bazelisk-cache: true
           cache-save: ${{ github.event_name != 'pull_request' }}
@@ -83,25 +83,25 @@ jobs:
           stage aarch64-apple-darwin //:watchman-aarch64-apple-darwin watchman
           stage x86_64-windows-gnu //:watchman-x86_64-windows-gnu watchman.exe
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: watchman-x86_64-linux-gnu
           path: artifacts/x86_64-linux-gnu/watchman
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: watchman-aarch64-linux-gnu
           path: artifacts/aarch64-linux-gnu/watchman
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: watchman-aarch64-apple-darwin
           path: artifacts/aarch64-apple-darwin/watchman
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: watchman-x86_64-windows-gnu
           path: artifacts/x86_64-windows-gnu/watchman.exe
@@ -112,9 +112,9 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - uses: bazel-contrib/setup-bazel@0.19.0
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
         with:
           bazelisk-cache: true
           cache-save: ${{ github.event_name != 'pull_request' }}
@@ -143,9 +143,9 @@ jobs:
             runner: windows-2022
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: watchman-${{ matrix.triple }}
           path: artifacts
