@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.2 (2026-07-27)
+
+## What's Changed
+* fix: use copy_file for EdenCommon config by @longlho in https://github.com/perplexityai/watchman/pull/20
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.3.1...v0.3.2
+
 ## 0.3.1 (2026-07-27)
 
 ## What's Changed
