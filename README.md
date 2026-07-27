@@ -46,8 +46,9 @@ gh workflow run publish-bcr.yml \
 
 The workflow validates the overlay, stages it in
 `perplexityai/bazel-central-registry`, and opens the upstream BCR pull request.
-It prefers the `BCR_PUBLISH_TOKEN` Actions secret used by `gazelle_py` and
-falls back to this repository's `GH_RELEASE_TOKEN`.
+It requires the `BCR_PUBLISH_TOKEN` Actions secret used by `gazelle_py`: a
+classic PAT with `repo` and `workflow` scopes. Fine-grained PATs cannot open
+pull requests against the public BCR repository.
 
 ## Development builds
 

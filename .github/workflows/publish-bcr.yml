@@ -25,6 +25,15 @@ jobs:
       - name: Validate overlay
         run: python3 tests/validate_bcr.py
 
+      - name: Check publishing token
+        env:
+          BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}
+        run: |
+          if [[ -z "${BCR_PUBLISH_TOKEN}" ]]; then
+            echo "::error::BCR_PUBLISH_TOKEN must be a classic PAT with repo and workflow scopes"
+            exit 1
+          fi
+
       - name: Resolve module version
         id: module
         env:
@@ -55,7 +64,7 @@ jobs:
       - name: Publish registry branch
         id: publish
         env:
-          BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN || secrets.GH_RELEASE_TOKEN }}
+          BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}
           VERSION: ${{ steps.module.outputs.version }}
         run: |
           set -euo pipefail
@@ -75,7 +84,7 @@ jobs:
 
       - name: Open BCR pull request
         env:
-          GH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN || secrets.GH_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}
           VERSION: ${{ steps.module.outputs.version }}
           BRANCH: ${{ steps.publish.outputs.branch }}
         run: |
