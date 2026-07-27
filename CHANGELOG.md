@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1 (2026-07-27)
+
+## What's Changed
+* ci: publish BCR overlay on release by @longlho in https://github.com/perplexityai/watchman/pull/18
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.3.0...v0.3.1
+
 ## 0.3.0 (2026-07-27)
 
 ## What's Changed
