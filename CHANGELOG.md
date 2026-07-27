@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.3 (2026-07-27)
+
+## What's Changed
+* fix: use upstream Watchman version in BCR by @longlho in https://github.com/perplexityai/watchman/pull/22
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.3.2...v0.3.3
+
 ## 0.3.2 (2026-07-27)
 
 ## What's Changed
