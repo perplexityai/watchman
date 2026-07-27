@@ -1,6 +1,9 @@
 name: Publish BCR overlay
 
 on:
+  release:
+    types:
+      - published
   workflow_dispatch:
     inputs:
       version:
@@ -22,6 +25,17 @@ jobs:
       - name: Validate overlay
         run: python3 tests/validate_bcr.py
 
+      - name: Resolve module version
+        id: module
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          version="${REQUESTED_VERSION}"
+          if [[ -z "${version}" ]]; then
+            version="$(python3 -c 'import json; print(json.load(open("bcr/modules/watchman/metadata.json"))["versions"][-1])')"
+          fi
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: bazelbuild/bazel-central-registry
@@ -30,7 +44,7 @@ jobs:
 
       - name: Stage registry entry
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ steps.module.outputs.version }}
         run: |
           python3 tools/stage_bcr_entry.py \
             --source-registry bcr \
@@ -41,8 +55,8 @@ jobs:
       - name: Publish registry branch
         id: publish
         env:
-          BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}
-          VERSION: ${{ inputs.version }}
+          BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN || secrets.GH_RELEASE_TOKEN }}
+          VERSION: ${{ steps.module.outputs.version }}
         run: |
           set -euo pipefail
 
@@ -61,8 +75,8 @@ jobs:
 
       - name: Open BCR pull request
         env:
-          GH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}
-          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN || secrets.GH_RELEASE_TOKEN }}
+          VERSION: ${{ steps.module.outputs.version }}
           BRANCH: ${{ steps.publish.outputs.branch }}
         run: |
           set -euo pipefail
