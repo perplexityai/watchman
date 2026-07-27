@@ -7,7 +7,7 @@ from tools.stage_bcr_entry import stage_entry
 
 
 MODULE = "watchman"
-VERSION = "2026.07.06.00.bcr.1"
+VERSION = "2026.07.06.00"
 
 
 def write_metadata(module_dir: pathlib.Path, versions: list[str], yanked=None) -> None:

@@ -17,7 +17,7 @@
         "github:facebook/watchman"
     ],
     "versions": [
-        "2026.07.06.00.bcr.1"
+        "2026.07.06.00"
     ],
     "yanked_versions": {}
 }

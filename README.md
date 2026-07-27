@@ -8,7 +8,7 @@ The intended consumer API is:
 ```starlark
 bazel_dep(
     name = "watchman",
-    version = "2026.07.06.00.bcr.1",
+    version = "2026.07.06.00",
 )
 ```
 
@@ -41,7 +41,7 @@ BCR. Maintainers can retry or publish an explicit version with:
 
 ```sh
 gh workflow run publish-bcr.yml \
-  -f version=2026.07.06.00.bcr.1
+  -f version=2026.07.06.00
 ```
 
 The workflow validates the overlay, stages it in

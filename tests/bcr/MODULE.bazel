@@ -2,5 +2,5 @@ module(name = "watchman_bcr_test")
 
 bazel_dep(
     name = "watchman",
-    version = "2026.07.06.00.bcr.1",
+    version = "2026.07.06.00",
 )
