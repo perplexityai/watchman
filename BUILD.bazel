@@ -8,6 +8,10 @@ load(
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files([
+    "bcr/modules/watchman/2026.07.06.00.bcr.1/patches/watchman-bazel.patch",
+])
+
 linux_x86_64_dist(
     name = "watchman-x86_64-linux-gnu",
     srcs = ["@watchman"],

@@ -1,3 +1,6 @@
 /bazel-*
 /dist/
 /node_modules/
+__pycache__/
+/tests/bcr/MODULE.bazel.lock
+/tests/bcr/bazel-*

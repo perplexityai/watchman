@@ -1,6 +1,5 @@
 exports_files([
     "double-conversion-bazel-9.patch",
-    "edencommon-mingw.patch",
     "folly-libcxx.patch",
     "folly-mingw-headers.patch",
     "folly-mingw.patch",
@@ -11,5 +10,4 @@ exports_files([
     "libevent-mingw.patch",
     "libunwind-bazel-9.patch",
     "range-v3-bazel-9.patch",
-    "watchman-bazel.patch",
 ])
