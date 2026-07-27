@@ -1,13 +1,13 @@
 # Private EdenCommon BUILD file used by the Watchman module.
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 package(default_visibility = ["//visibility:public"])
 
-genrule(
+copy_file(
     name = "eden_config",
-    srcs = ["CMake/eden-config.h.in"],
-    outs = ["eden/common/eden-config.h"],
-    cmd = "cp $< $@",
+    src = "CMake/eden-config.h.in",
+    out = "eden/common/eden-config.h",
 )
 
 cc_library(

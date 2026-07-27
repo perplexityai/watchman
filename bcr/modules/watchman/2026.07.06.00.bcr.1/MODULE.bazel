@@ -7,6 +7,7 @@ module(
 bazel_dep(name = "boost.filesystem", version = "1.89.0.bcr.1")
 bazel_dep(name = "boost.regex", version = "1.89.0.bcr.1")
 bazel_dep(name = "boost.utility", version = "1.89.0.bcr.1")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "fmt", version = "12.1.0")
 bazel_dep(name = "folly", version = "2026.05.18.00")
 bazel_dep(name = "gflags", version = "2.2.2.bcr.1")
