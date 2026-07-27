@@ -26,7 +26,7 @@ http_archive = use_repo_rule(
 
 http_archive(
     name = "fb303",
-    build_file = "//bcr/modules/watchman/2026.07.06.00.bcr.1/overlay/bazel/third_party:fb303.BUILD.bazel",
+    build_file = "//bcr/modules/watchman/2026.07.06.00/overlay/bazel/third_party:fb303.BUILD.bazel",
     sha256 = "9365aaf1b9046ac3f1ec24e52eedc78704fe9a10687fd758f80a19e1e7e71a21",
     strip_prefix = "fb303-e8b0021954f2328b9b954687b2a94dbae100fd17",
     urls = ["https://github.com/facebook/fb303/archive/e8b0021954f2328b9b954687b2a94dbae100fd17.tar.gz"],
@@ -34,9 +34,9 @@ http_archive(
 
 http_archive(
     name = "edencommon",
-    build_file = "//bcr/modules/watchman/2026.07.06.00.bcr.1/overlay/bazel/third_party:edencommon.BUILD.bazel",
+    build_file = "//bcr/modules/watchman/2026.07.06.00/overlay/bazel/third_party:edencommon.BUILD.bazel",
     patch_args = ["-p1"],
-    patches = ["//bcr/modules/watchman/2026.07.06.00.bcr.1/overlay/bazel/patches:edencommon-mingw.patch"],
+    patches = ["//bcr/modules/watchman/2026.07.06.00/overlay/bazel/patches:edencommon-mingw.patch"],
     sha256 = "e94ce3819f4e015d732b2cb6a67e44b5f3ffc7de5518265dceb9b73bbcf5a16a",
     strip_prefix = "edencommon-9bbfab31b921d0044ef1eaed36e2b660d75f7bc4",
     urls = ["https://github.com/facebookexperimental/edencommon/archive/9bbfab31b921d0044ef1eaed36e2b660d75f7bc4.tar.gz"],
@@ -44,9 +44,9 @@ http_archive(
 
 http_archive(
     name = "watchman",
-    build_file = "//bcr/modules/watchman/2026.07.06.00.bcr.1/overlay:BUILD.bazel",
+    build_file = "//bcr/modules/watchman/2026.07.06.00/overlay:BUILD.bazel",
     patch_args = ["-p1"],
-    patches = ["//:bcr/modules/watchman/2026.07.06.00.bcr.1/patches/watchman-bazel.patch"],
+    patches = ["//:bcr/modules/watchman/2026.07.06.00/patches/watchman-bazel.patch"],
     sha256 = "e46ef6b98e0ea4201ef603e628eac78165573a8cc4bac12c74cdab813c45f9f7",
     strip_prefix = "watchman-2026.07.06.00",
     urls = ["https://github.com/facebook/watchman/archive/refs/tags/v2026.07.06.00.tar.gz"],
