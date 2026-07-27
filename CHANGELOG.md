@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 (2026-07-27)
+
+## What's Changed
+* feat: add cross-platform Watchman build and BCR overlay by @longlho in https://github.com/perplexityai/watchman/pull/15
+* chore: add pplx-oss as BCR maintainer by @longlho in https://github.com/perplexityai/watchman/pull/17
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.2.1...v0.3.0
+
 ## 0.2.1 (2026-07-10)
 
 ## What's Changed
