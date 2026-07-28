@@ -14,9 +14,17 @@ permissions:
 
 jobs:
   bcr-overlay:
-    name: Validate BCR overlay
+    name: Validate BCR overlay (Bazel ${{ matrix.bazel }})
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        bazel:
+          - 8.4.1
+          - 9.2.0
+    env:
+      USE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
@@ -24,7 +32,7 @@ jobs:
         with:
           bazelisk-cache: true
           cache-save: ${{ github.event_name != 'pull_request' }}
-          disk-cache: ${{ github.workflow }}-bcr-overlay
+          disk-cache: ${{ github.workflow }}-bcr-overlay-${{ matrix.bazel }}
           repository-cache: true
 
       - name: Validate registry metadata
@@ -36,6 +44,7 @@ jobs:
           bazel build \
             --registry="file://$GITHUB_WORKSPACE/bcr" \
             --registry=https://bcr.bazel.build \
+            --incompatible_autoload_externally=+@rules_cc \
             @watchman//:watchman
 
   build:
