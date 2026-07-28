@@ -14,7 +14,9 @@ diff --git a/folly/BUILD.bazel b/folly/BUILD.bazel
 index d39b8ea..691e80c 100644
 --- a/folly/BUILD.bazel
 +++ b/folly/BUILD.bazel
-@@ -277,8 +277,4 @@ cmake_configure_file(
+@@ -275,18 +275,11 @@ cmake_configure_file(
+     defines = [
+         "FOLLY_HAVE_LIBGLOG",
          "FOLLY_HAVE_LIBGFLAGS",
 -        "FOLLY_HAVE_PTHREAD",
 -        "FOLLY_HAVE_PTHREAD_ATFORK",
@@ -23,28 +25,45 @@ index d39b8ea..691e80c 100644
          "FOLLY_HAVE_CLOCK_GETTIME",
          "FOLLY_HAVE_UNALIGNED_ACCESS",
          "FOLLY_HAVE_VLA",
-@@ -298,10 +294,19 @@ cmake_configure_file(
+         "FOLLY_HAVE_WCHAR_SUPPORT",
+         "HAVE_VSNPRINTF_ERRORS",
+-        "FOLLY_HAVE_DWARF",
+-        "FOLLY_HAVE_SWAPCONTEXT",
+-        "FOLLY_HAVE_BACKTRACE",
+         "FOLLY_HAVE_SHADOW_LOCAL_WARNINGS",
+         "FOLLY_HAVE_LIBLZ4",
+         "FOLLY_HAVE_LIBLZMA",
+@@ -298,11 +291,26 @@ cmake_configure_file(
          "@platforms//os:windows": [
              # TODO(kgk): What defines should be set here?
          ],
 -        "@platforms//os:macos": [],
 +        "@platforms//os:macos": [
++            "FOLLY_HAVE_BACKTRACE",
++            "FOLLY_HAVE_DWARF",
 +            "FOLLY_HAVE_PTHREAD",
 +            "FOLLY_HAVE_PTHREAD_ATFORK",
 +            "FOLLY_HAVE_PREADV",
 +            "FOLLY_HAVE_PWRITEV",
++            "FOLLY_HAVE_SWAPCONTEXT",
 +        ],
          "@platforms//os:linux": [
              "FOLLY_HAVE_ACCEPT4",
++            "FOLLY_HAVE_BACKTRACE",
++            "FOLLY_HAVE_DWARF",
              "FOLLY_HAVE_GETRANDOM",
 +            "FOLLY_HAVE_PTHREAD",
 +            "FOLLY_HAVE_PTHREAD_ATFORK",
 +            "FOLLY_HAVE_PREADV",
 +            "FOLLY_HAVE_PWRITEV",
              "FOLLY_HAVE_PIPE2",
++            "FOLLY_HAVE_SWAPCONTEXT",
              "FOLLY_HAVE_IFUNC",
              "FOLLY_HAVE_WEAK_SYMBOLS",
-@@ -314,9 +319,4 @@ cmake_configure_file(
+             "FOLLY_HAVE_LINUX_VDSO",
+@@ -312,11 +320,6 @@ cmake_configure_file(
+             "FOLLY_USE_SYMBOLIZER",
+         ],
 -    }) + select({
 -        "@platforms//cpu:x86_64": [
 -            "FOLLY_HAVE_EXTRANDOM_SFMT19937",
