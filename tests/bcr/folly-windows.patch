@@ -86,6 +86,18 @@ index f36cb00..fe0184a 100644
  #if defined(_MSC_VER)
  #define FOLLY_CPLUSPLUS _MSVC_LANG
  #else
+diff --git a/folly/init/BUILD.bazel b/folly/init/BUILD.bazel
+index 8afad13..6d6fd5f 100644
+--- a/folly/init/BUILD.bazel
++++ b/folly/init/BUILD.bazel
+@@ -20,6 +20,7 @@ cpp_library(
+     ] + select({
+         "@platforms//os:linux": ["//folly/debugging/symbolizer:signal_handler"],
+         "@platforms//os:macos": ["//folly/debugging/symbolizer:signal_handler"],
++        "@platforms//os:windows": ["//folly/debugging/symbolizer:signal_handler"],
+         "//conditions:default": [],
+     }),
+ )
 diff --git a/folly/portability/BUILD.bazel b/folly/portability/BUILD.bazel
 index 9c3a4b1..c522440 100644
 --- a/folly/portability/BUILD.bazel
