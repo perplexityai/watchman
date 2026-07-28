@@ -311,7 +311,6 @@ watchman_binary(
         "@folly//folly/portability:fcntl",
         "@folly//folly/portability:filesystem",
         "@folly//folly/portability:sockets",
-        "@folly//folly/portability:sys_mman",
         "@folly//folly/portability:sys_stat",
         "@folly//folly/portability:sys_time",
         "@folly//folly/portability:sys_types",
@@ -322,6 +321,9 @@ watchman_binary(
         "@folly//folly/system:thread_name",
         "@glog",
     ] + select({
+        ":windows": [],
+        "//conditions:default": ["@folly//folly/portability:sys_mman"],
+    }) + select({
         ":linux": ["@openssl//:crypto"],
         "//conditions:default": [],
     }),
