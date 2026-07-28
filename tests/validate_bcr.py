@@ -52,8 +52,9 @@ def validate_version(module_name: str, version_dir: pathlib.Path) -> None:
     expected_identity = f'name = "{module_name}"'
     if expected_identity not in module_contents:
         fail(f"{module_name}: MODULE.bazel has wrong module name")
-    if 'bazel_compatibility = [">=8.0.0"' not in module_contents:
-        fail(f"{module_name}: overlays require Bazel compatibility >=8.0.0")
+    compatibility = 'bazel_compatibility = [">=8.0.0", "<10.0.0"]'
+    if compatibility not in module_contents:
+        fail(f"{module_name}: overlays require Bazel 8 and 9 compatibility")
 
     source = json.loads((version_dir / "source.json").read_text())
     for kind in ("overlay", "patches"):
