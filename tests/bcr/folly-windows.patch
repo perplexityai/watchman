@@ -10,6 +10,36 @@ index 853a9f2..d97ff3a 100644
 +        "@platforms//os:windows": [],
 +        "//conditions:default": ["//folly/portability/provide:libdwarf"],
 +    }),
+diff --git a/folly/BUILD.bazel b/folly/BUILD.bazel
+index d39b8ea..691e80c 100644
+--- a/folly/BUILD.bazel
++++ b/folly/BUILD.bazel
+@@ -277,8 +277,6 @@ cmake_configure_file(
+         "FOLLY_HAVE_LIBGFLAGS",
+         "FOLLY_HAVE_PTHREAD",
+         "FOLLY_HAVE_PTHREAD_ATFORK",
+-        "FOLLY_HAVE_PREADV",
+-        "FOLLY_HAVE_PWRITEV",
+         "FOLLY_HAVE_CLOCK_GETTIME",
+         "FOLLY_HAVE_UNALIGNED_ACCESS",
+         "FOLLY_HAVE_VLA",
+@@ -298,10 +296,15 @@ cmake_configure_file(
+         "@platforms//os:windows": [
+             # TODO(kgk): What defines should be set here?
+         ],
+-        "@platforms//os:macos": [],
++        "@platforms//os:macos": [
++            "FOLLY_HAVE_PREADV",
++            "FOLLY_HAVE_PWRITEV",
++        ],
+         "@platforms//os:linux": [
+             "FOLLY_HAVE_ACCEPT4",
+             "FOLLY_HAVE_GETRANDOM",
++            "FOLLY_HAVE_PREADV",
++            "FOLLY_HAVE_PWRITEV",
+             "FOLLY_HAVE_PIPE2",
+             "FOLLY_HAVE_IFUNC",
+             "FOLLY_HAVE_WEAK_SYMBOLS",
 diff --git a/folly/Portability.h b/folly/Portability.h
 index f36cb00..fe0184a 100644
 --- a/folly/Portability.h
