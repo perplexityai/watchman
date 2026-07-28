@@ -140,7 +140,6 @@ jobs:
             "--registry=$registry"
             "--registry=https://bcr.bazel.build"
             "--incompatible_autoload_externally=+@rules_cc"
-            "--extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows"
           )
 
           Push-Location tests/bcr
