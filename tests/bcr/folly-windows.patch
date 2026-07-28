@@ -14,10 +14,9 @@ diff --git a/CMake/folly-config.h.cmake b/CMake/folly-config.h.cmake
 index 3d3a828..dfefc95 100644
 --- a/CMake/folly-config.h.cmake
 +++ b/CMake/folly-config.h.cmake
-@@ -59,0 +60,5 @@
+@@ -59,0 +60,4 @@
 +#ifdef _MSC_VER
-+#undef FOLLY_HAVE_INT128_T
-+#define FOLLY_HAVE_INT128_T 0
++# undef FOLLY_HAVE_INT128_T
 +#endif
 +
 diff --git a/folly/portability/BUILD.bazel b/folly/portability/BUILD.bazel
