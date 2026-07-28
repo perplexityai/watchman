@@ -205,8 +205,6 @@ watchman_binary(
         exclude = ["watchman/thirdparty/deelevate_binding/**"],
     ),
     copts = [
-        "-Wall",
-        "-Wextra",
         "-DGLOG_NO_ABBREVIATED_SEVERITIES",
         "-I.",
     ] + select({
