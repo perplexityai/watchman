@@ -45,9 +45,6 @@ jobs:
             --registry="file://$GITHUB_WORKSPACE/bcr" \
             --registry=https://bcr.bazel.build \
             --incompatible_autoload_externally=+@rules_cc \
-            --copt=-O2 \
-            --cxxopt=-std=gnu++20 \
-            --host_cxxopt=-std=gnu++20 \
             @watchman//:watchman
 
   build:
