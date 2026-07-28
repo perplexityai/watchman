@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.4 (2026-07-28)
+
+## What's Changed
+* fix: support BCR Bazel 8 presubmit by @longlho in https://github.com/perplexityai/watchman/pull/24
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.3.3...v0.3.4
+
 ## 0.3.3 (2026-07-27)
 
 ## What's Changed
