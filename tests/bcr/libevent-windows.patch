@@ -1,0 +1,10 @@
+diff --git a/BUILD.bazel b/BUILD.bazel
+index 96132f1..5fa50fa 100644
+--- a/BUILD.bazel
++++ b/BUILD.bazel
+@@ -96,4 +96,5 @@ EVENT_CORE_PUBLIC_HEADERS = [
+     "include/event2/listener.h",
++    "include/event2/rpc.h",
+     "include/event2/tag.h",
+     "include/event2/tag_compat.h",
+     "include/event2/thread.h",
