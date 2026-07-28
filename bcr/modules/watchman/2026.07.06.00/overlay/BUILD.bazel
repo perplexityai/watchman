@@ -204,7 +204,11 @@ watchman_binary(
         ["watchman/**/*.h"],
         exclude = ["watchman/thirdparty/deelevate_binding/**"],
     ),
-    copts = [
+    copts = select({
+        "@rules_cc//cc/compiler:clang-cl": ["/W4"],
+        "@rules_cc//cc/compiler:msvc-cl": ["/W4"],
+        "//conditions:default": ["-Wall", "-Wextra"],
+    }) + [
         "-DGLOG_NO_ABBREVIATED_SEVERITIES",
         "-I.",
     ] + select({
