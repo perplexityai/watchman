@@ -10,3 +10,13 @@ index 853a9f2..d97ff3a 100644
 +        "@platforms//os:windows": [],
 +        "//conditions:default": ["//folly/portability/provide:libdwarf"],
 +    }),
+diff --git a/CMake/folly-config.h.cmake b/CMake/folly-config.h.cmake
+index 3d3a828..dfefc95 100644
+--- a/CMake/folly-config.h.cmake
++++ b/CMake/folly-config.h.cmake
+@@ -59,0 +60,5 @@
++#ifdef _MSC_VER
++#undef FOLLY_HAVE_INT128_T
++#define FOLLY_HAVE_INT128_T 0
++#endif
++
