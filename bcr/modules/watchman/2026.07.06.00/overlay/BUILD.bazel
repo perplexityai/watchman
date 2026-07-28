@@ -302,7 +302,6 @@ watchman_binary(
         "@folly//folly/chrono:conv",
         "@folly//folly/concurrency:unbounded_queue",
         "@folly//folly/concurrency/container:lock_free_ring_buffer",
-        "@folly//folly/debugging/symbolizer",
         "@folly//folly/executors:cpu_thread_pool_executor",
         "@folly//folly/futures:core",
         "@folly//folly/init",
@@ -322,7 +321,10 @@ watchman_binary(
         "@glog",
     ] + select({
         ":windows": [],
-        "//conditions:default": ["@folly//folly/portability:sys_mman"],
+        "//conditions:default": [
+            "@folly//folly/debugging/symbolizer",
+            "@folly//folly/portability:sys_mman",
+        ],
     }) + select({
         ":linux": ["@openssl//:crypto"],
         "//conditions:default": [],
