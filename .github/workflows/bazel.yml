@@ -36,6 +36,9 @@ jobs:
           bazel build \
             --registry="file://$GITHUB_WORKSPACE/bcr" \
             --registry=https://bcr.bazel.build \
+            --copt=-O2 \
+            --cxxopt=-std=gnu++20 \
+            --host_cxxopt=-std=gnu++20 \
             @watchman//:watchman
 
   build:
