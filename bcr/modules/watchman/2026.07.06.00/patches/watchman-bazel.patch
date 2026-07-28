@@ -3,18 +3,17 @@ diff --git a/watchman_binary.bzl b/watchman_binary.bzl
 new file mode 100644
 --- /dev/null
 +++ b/watchman_binary.bzl
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,17 @@
 +"""Watchman binary rule with required transitive C++ settings."""
 +
 +load("@rules_cc//cc:defs.bzl", "cc_binary")
 +load("@with_cfg.bzl", "with_cfg")
 +
 +_watchman_builder = with_cfg(cc_binary)
-+_watchman_builder.extend("copt", ["-O2"])
 +_watchman_builder.extend("copt", select({
-+    "@rules_cc//cc/compiler:clang-cl": ["/W4"],
-+    "@rules_cc//cc/compiler:msvc-cl": ["/W4"],
-+    "//conditions:default": ["-Wall", "-Wextra"],
++    "@rules_cc//cc/compiler:clang-cl": ["-O2", "/W4"],
++    "@rules_cc//cc/compiler:msvc-cl": ["-O2", "/W4"],
++    "//conditions:default": ["-O2", "-Wall", "-Wextra"],
 +}))
 +_watchman_builder.extend("cxxopt", select({
 +    "@rules_cc//cc/compiler:clang-cl": ["/std:c++20", "/utf-8"],

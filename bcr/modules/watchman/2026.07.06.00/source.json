@@ -13,6 +13,6 @@
     },
     "patch_strip": 1,
     "patches": {
-        "watchman-bazel.patch": "sha256-ZObhXfM/gImt1LK7jmLFVOq82dEr0ZXy7Hvb6bcpNR0="
+        "watchman-bazel.patch": "sha256-5GUHQ3tnCmz0M9l3LHpY6Tp2Bh2EAPfVEgwwI2rrO2g="
     }
 }
