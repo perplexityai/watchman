@@ -1,0 +1,17 @@
+diff --git a/folly/init/BUILD.bazel b/folly/init/BUILD.bazel
+index 6202220..e055f74 100644
+--- a/folly/init/BUILD.bazel
++++ b/folly/init/BUILD.bazel
+@@ -13 +12,0 @@ cpp_library(
+-        "//folly/debugging/symbolizer",
+@@ -21,2 +20,8 @@ cpp_library(
+-        "@platforms//os:linux": ["//folly/debugging/symbolizer:signal_handler"],
+-        "@platforms//os:macos": ["//folly/debugging/symbolizer:signal_handler"],
++        "@platforms//os:linux": [
++            "//folly/debugging/symbolizer",
++            "//folly/debugging/symbolizer:signal_handler",
++        ],
++        "@platforms//os:macos": [
++            "//folly/debugging/symbolizer",
++            "//folly/debugging/symbolizer:signal_handler",
++        ],
