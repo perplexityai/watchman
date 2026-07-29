@@ -1,0 +1,12 @@
+diff --git a/BUILD.bazel b/BUILD.bazel
+index 96132f1..5fa50fa 100644
+--- a/BUILD.bazel
++++ b/BUILD.bazel
+@@ -149,6 +149,7 @@ cc_library(
+         # arc4random.c is textually included by evutil_rand.c when
+         # arc4random() is not available. It is not compiled by itself.
+         "arc4random.c",
++        "include/event2/rpc.h",
+     ],
+     visibility = ["//visibility:public"],
+     deps = [

@@ -1,0 +1,111 @@
+diff --git a/folly/debugging/symbolizer/BUILD.bazel b/folly/debugging/symbolizer/BUILD.bazel
+index 853a9f2..d97ff3a 100644
+--- a/folly/debugging/symbolizer/BUILD.bazel
++++ b/folly/debugging/symbolizer/BUILD.bazel
+@@ -32 +31,0 @@ cpp_library(
+-        "//folly/portability/provide:libdwarf",
+@@ -33 +32,4 @@ cpp_library(
+-    ],
++    ] + select({
++        "@platforms//os:windows": [],
++        "//conditions:default": ["//folly/portability/provide:libdwarf"],
++    }),
+diff --git a/folly/BUILD.bazel b/folly/BUILD.bazel
+index d39b8ea..691e80c 100644
+--- a/folly/BUILD.bazel
++++ b/folly/BUILD.bazel
+@@ -275,18 +275,11 @@ cmake_configure_file(
+     defines = [
+         "FOLLY_HAVE_LIBGLOG",
+         "FOLLY_HAVE_LIBGFLAGS",
+-        "FOLLY_HAVE_PTHREAD",
+-        "FOLLY_HAVE_PTHREAD_ATFORK",
+-        "FOLLY_HAVE_PREADV",
+-        "FOLLY_HAVE_PWRITEV",
+         "FOLLY_HAVE_CLOCK_GETTIME",
+         "FOLLY_HAVE_UNALIGNED_ACCESS",
+         "FOLLY_HAVE_VLA",
+         "FOLLY_HAVE_WCHAR_SUPPORT",
+         "HAVE_VSNPRINTF_ERRORS",
+-        "FOLLY_HAVE_DWARF",
+-        "FOLLY_HAVE_SWAPCONTEXT",
+-        "FOLLY_HAVE_BACKTRACE",
+         "FOLLY_HAVE_SHADOW_LOCAL_WARNINGS",
+         "FOLLY_HAVE_LIBLZ4",
+         "FOLLY_HAVE_LIBLZMA",
+@@ -298,11 +291,26 @@ cmake_configure_file(
+         "@platforms//os:windows": [
+             # TODO(kgk): What defines should be set here?
+         ],
+-        "@platforms//os:macos": [],
++        "@platforms//os:macos": [
++            "FOLLY_HAVE_BACKTRACE",
++            "FOLLY_HAVE_DWARF",
++            "FOLLY_HAVE_PTHREAD",
++            "FOLLY_HAVE_PTHREAD_ATFORK",
++            "FOLLY_HAVE_PREADV",
++            "FOLLY_HAVE_PWRITEV",
++            "FOLLY_HAVE_SWAPCONTEXT",
++        ],
+         "@platforms//os:linux": [
+             "FOLLY_HAVE_ACCEPT4",
++            "FOLLY_HAVE_BACKTRACE",
++            "FOLLY_HAVE_DWARF",
+             "FOLLY_HAVE_GETRANDOM",
++            "FOLLY_HAVE_PTHREAD",
++            "FOLLY_HAVE_PTHREAD_ATFORK",
++            "FOLLY_HAVE_PREADV",
++            "FOLLY_HAVE_PWRITEV",
+             "FOLLY_HAVE_PIPE2",
++            "FOLLY_HAVE_SWAPCONTEXT",
+             "FOLLY_HAVE_IFUNC",
+             "FOLLY_HAVE_WEAK_SYMBOLS",
+             "FOLLY_HAVE_LINUX_VDSO",
+@@ -312,11 +320,6 @@ cmake_configure_file(
+             "FOLLY_USE_SYMBOLIZER",
+         ],
+-    }) + select({
+-        "@platforms//cpu:x86_64": [
+-            "FOLLY_HAVE_EXTRANDOM_SFMT19937",
+-        ],
+-        "//conditions:default": [],
+     }) + select({
+         ":with_int128_setting": ["FOLLY_HAVE_INT128_T"],
+         "//conditions:default": [],
+     }),
+diff --git a/folly/Portability.h b/folly/Portability.h
+index f36cb00..fe0184a 100644
+--- a/folly/Portability.h
++++ b/folly/Portability.h
+@@ -25,3 +25,8 @@
++#ifdef _MSC_VER
++#undef FOLLY_HAVE_INT128_T
++#define FOLLY_HAVE_INT128_T 0
++#endif
++
+ #if defined(_MSC_VER)
+ #define FOLLY_CPLUSPLUS _MSVC_LANG
+ #else
+diff --git a/folly/init/BUILD.bazel b/folly/init/BUILD.bazel
+index 8afad13..6d6fd5f 100644
+--- a/folly/init/BUILD.bazel
++++ b/folly/init/BUILD.bazel
+@@ -20,6 +20,7 @@ cpp_library(
+     ] + select({
+         "@platforms//os:linux": ["//folly/debugging/symbolizer:signal_handler"],
+         "@platforms//os:macos": ["//folly/debugging/symbolizer:signal_handler"],
++        "@platforms//os:windows": ["//folly/debugging/symbolizer:signal_handler"],
+         "//conditions:default": [],
+     }),
+ )
+diff --git a/folly/portability/BUILD.bazel b/folly/portability/BUILD.bazel
+index 9c3a4b1..c522440 100644
+--- a/folly/portability/BUILD.bazel
++++ b/folly/portability/BUILD.bazel
+@@ -293,5 +293,6 @@ cpp_library(
+     }),
+     deps = [
++        ":sys_types",
+         ":windows",
+         "//folly:portability",
+     ],

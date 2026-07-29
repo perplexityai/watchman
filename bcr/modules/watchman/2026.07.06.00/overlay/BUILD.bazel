@@ -204,9 +204,11 @@ watchman_binary(
         ["watchman/**/*.h"],
         exclude = ["watchman/thirdparty/deelevate_binding/**"],
     ),
-    copts = [
-        "-Wall",
-        "-Wextra",
+    copts = select({
+        "@rules_cc//cc/compiler:clang-cl": ["/W4"],
+        "@rules_cc//cc/compiler:msvc-cl": ["/W4"],
+        "//conditions:default": ["-Wall", "-Wextra"],
+    }) + [
         "-DGLOG_NO_ABBREVIATED_SEVERITIES",
         "-I.",
     ] + select({
@@ -302,7 +304,6 @@ watchman_binary(
         "@folly//folly/chrono:conv",
         "@folly//folly/concurrency:unbounded_queue",
         "@folly//folly/concurrency/container:lock_free_ring_buffer",
-        "@folly//folly/debugging/symbolizer",
         "@folly//folly/executors:cpu_thread_pool_executor",
         "@folly//folly/futures:core",
         "@folly//folly/init",
@@ -311,7 +312,6 @@ watchman_binary(
         "@folly//folly/portability:fcntl",
         "@folly//folly/portability:filesystem",
         "@folly//folly/portability:sockets",
-        "@folly//folly/portability:sys_mman",
         "@folly//folly/portability:sys_stat",
         "@folly//folly/portability:sys_time",
         "@folly//folly/portability:sys_types",
@@ -322,6 +322,12 @@ watchman_binary(
         "@folly//folly/system:thread_name",
         "@glog",
     ] + select({
+        ":windows": [],
+        "//conditions:default": [
+            "@folly//folly/debugging/symbolizer",
+            "@folly//folly/portability:sys_mman",
+        ],
+    }) + select({
         ":linux": ["@openssl//:crypto"],
         "//conditions:default": [],
     }),

@@ -4,3 +4,18 @@ bazel_dep(
     name = "watchman",
     version = "2026.07.06.00",
 )
+
+# libevent's Windows backend includes event2/rpc.h from event_core, but the
+# BCR BUILD file only declares that header on event_extra.
+single_version_override(
+    module_name = "libevent",
+    patch_strip = 1,
+    patches = ["//:libevent-windows.patch"],
+)
+
+# Folly's init target only uses its Unix symbolizer on Linux and macOS.
+single_version_override(
+    module_name = "folly",
+    patch_strip = 1,
+    patches = ["//:folly-windows.patch"],
+)

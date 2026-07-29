@@ -3,7 +3,7 @@
     "integrity": "sha256-5G72uY4OpCAe9gPmKOrHgWVXOozEusEsdM2rgTxF+fc=",
     "strip_prefix": "watchman-2026.07.06.00",
     "overlay": {
-        "BUILD.bazel": "sha256-NVQROyGBD58UdLnZLQ0TdTduVYIdHaL8zW+nQvAB9uE=",
+        "BUILD.bazel": "sha256-NbEbc5UUuRl18tle9i9ht3bi6eC+nR8jh5ruZdW/LGc=",
         "MODULE.bazel": "sha256-cofDyYwAbnAzhvgElmk6d7CJReE/v45MtgnN4lQJCNg=",
         "bazel/patches/BUILD.bazel": "sha256-bMzIuyOaQOqAyg7TZ36UZjp0iHUaT9KAqHDuhenE56Q=",
         "bazel/patches/edencommon-mingw.patch": "sha256-013B4B2vvHTG4aiKntIFuneADC/fIQA+2fxGargtaI4=",
@@ -13,6 +13,6 @@
     },
     "patch_strip": 1,
     "patches": {
-        "watchman-bazel.patch": "sha256-ikaVrXCDr8YpYQHPqfUNAwbm7nrlkORtosQL2Z0NG/Q="
+        "watchman-bazel.patch": "sha256-U+ckNjBVifZu0d7iXtoCzR4lI6A3yya7QMTnbXIuus8="
     }
 }

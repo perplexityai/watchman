@@ -116,10 +116,12 @@ jobs:
           path: artifacts/x86_64-windows-gnu/watchman.exe
           if-no-files-found: error
 
-  build-windows-host:
-    name: Build Windows binary on Windows
+  smoke-windows-msvc:
+    name: Smoke test (x86_64-windows-msvc)
     runs-on: windows-2022
     timeout-minutes: 120
+    env:
+      USE_BAZEL_VERSION: 9.2.0
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
@@ -127,11 +129,46 @@ jobs:
         with:
           bazelisk-cache: true
           cache-save: ${{ github.event_name != 'pull_request' }}
-          disk-cache: ${{ github.workflow }}-windows-x64
+          disk-cache: ${{ github.workflow }}-windows-msvc
           repository-cache: true
 
-      - name: Build Windows distribution
-        run: bazel build //:watchman-x86_64-windows-gnu
+      - name: Build and smoke test with MSVC
+        shell: pwsh
+        run: |
+          $registry = "file:///" + $env:GITHUB_WORKSPACE.Replace("\", "/") + "/bcr"
+          $bazelArgs = @(
+            "--registry=$registry"
+            "--registry=https://bcr.bazel.build"
+            "--incompatible_autoload_externally=+@rules_cc"
+          )
+
+          Push-Location tests/bcr
+          try {
+            bazel build @bazelArgs "@watchman//:watchman"
+            if ($LASTEXITCODE -ne 0) {
+              throw "MSVC build failed with code $LASTEXITCODE"
+            }
+
+            $outputs = bazel cquery @bazelArgs --output=files "@watchman//:watchman"
+            if ($LASTEXITCODE -ne 0) {
+              throw "MSVC output query failed with code $LASTEXITCODE"
+            }
+
+            $relativeBinary = @($outputs | Where-Object { $_ -like "*.exe" })
+            if ($relativeBinary.Count -ne 1) {
+              throw "expected one Watchman executable, got $($relativeBinary.Count)"
+            }
+
+            $executionRoot = bazel info execution_root
+            if ($LASTEXITCODE -ne 0) {
+              throw "Bazel execution-root query failed with code $LASTEXITCODE"
+            }
+            $watchman = Join-Path $executionRoot $relativeBinary[0]
+          } finally {
+            Pop-Location
+          }
+
+          ./tests/watchman_smoke_test.ps1 -Watchman $watchman
 
   smoke:
     name: Smoke test (${{ matrix.triple }})

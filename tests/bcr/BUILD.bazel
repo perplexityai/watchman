@@ -1,1 +1,6 @@
 package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "folly-windows.patch",
+    "libevent-windows.patch",
+])
