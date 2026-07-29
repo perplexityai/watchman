@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.5 (2026-07-29)
+
+## What's Changed
+* ci: smoke test Watchman with MSVC by @longlho in https://github.com/perplexityai/watchman/pull/26
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.3.4...v0.3.5
+
 ## 0.3.4 (2026-07-28)
 
 ## What's Changed

@@ -1,6 +1,6 @@
 module(
     name = "watchman_development",
-    version = "0.3.4",
+    version = "0.3.5",
 )
 
 bazel_dep(name = "llvm", version = "0.8.11")
