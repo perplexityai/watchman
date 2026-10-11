@@ -1,5 +1,8 @@
 module(name = "watchman_bcr_test")
 
+# Avoid the yanked libaio revision pulled in by Folly.
+bazel_dep(name = "libaio", version = "0.3.113.bcr.1")
+
 bazel_dep(
     name = "watchman",
     version = "2026.07.06.00",
