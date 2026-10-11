@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.6 (2026-10-11)
+
+## What's Changed
+* ci: migrate overlay builds and artifact smoke to Buildkite by @longlho in https://github.com/perplexityai/watchman/pull/28
+
+
+**Full Changelog**: https://github.com/perplexityai/watchman/compare/v0.3.5...v0.3.6
+
 ## 0.3.5 (2026-07-29)
 
 ## What's Changed
