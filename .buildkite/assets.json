@@ -1,0 +1,6 @@
+[
+  "watchman-x86_64-linux-gnu",
+  "watchman-aarch64-linux-gnu",
+  "watchman-aarch64-apple-darwin",
+  "watchman-x86_64-windows-gnu.exe"
+]

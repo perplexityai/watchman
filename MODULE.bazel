@@ -3,6 +3,9 @@ module(
     version = "0.3.5",
 )
 
+# Avoid the yanked libaio revision pulled in by Folly.
+bazel_dep(name = "libaio", version = "0.3.113.bcr.1")
+
 bazel_dep(name = "llvm", version = "0.8.11")
 bazel_dep(name = "boost.context", version = "1.89.0.bcr.1")
 bazel_dep(name = "boost.filesystem", version = "1.89.0.bcr.1")

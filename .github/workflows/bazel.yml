@@ -1,121 +1,39 @@
-name: bazel
-
-on:
+---
+name: Retained native coverage
+'on':
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
+    - main
+  merge_group:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
-  bcr-overlay:
-    name: Validate BCR overlay (Bazel ${{ matrix.bazel }})
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        bazel:
-          - 8.4.1
-          - 9.2.0
-    env:
-      USE_BAZEL_VERSION: ${{ matrix.bazel }}
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-
-      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
-        with:
-          bazelisk-cache: true
-          cache-save: ${{ github.event_name != 'pull_request' }}
-          disk-cache: ${{ github.workflow }}-bcr-overlay-${{ matrix.bazel }}
-          repository-cache: true
-
-      - name: Validate registry metadata
-        run: python3 tests/validate_bcr.py
-
-      - name: Build as BCR dependency
-        working-directory: tests/bcr
-        run: |
-          bazel build \
-            --registry="file://$GITHUB_WORKSPACE/bcr" \
-            --registry=https://bcr.bazel.build \
-            --incompatible_autoload_externally=+@rules_cc \
-            @watchman//:watchman
-
-  build:
-    name: Build binaries
-    runs-on: ubuntu-24.04
+  smoke-arm64:
+    name: Native Linux ARM64 smoke
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-
-      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
-        with:
-          bazelisk-cache: true
-          cache-save: ${{ github.event_name != 'pull_request' }}
-          disk-cache: ${{ github.workflow }}-linux-x64
-          repository-cache: true
-
-      - name: Build distributions
-        run: |
-          set -euo pipefail
-
-          targets=(
-            //:watchman-x86_64-linux-gnu
-            //:watchman-aarch64-linux-gnu
-            //:watchman-aarch64-apple-darwin
-            //:watchman-x86_64-windows-gnu
-          )
-          bazel build "${targets[@]}"
-
-          execroot="$(bazel info execution_root)"
-          stage() {
-            local triple="$1"
-            local target="$2"
-            local binary_name="$3"
-            local outputs=()
-
-            mapfile -t outputs < <(bazel cquery --output=files "$target")
-            [[ "${#outputs[@]}" -eq 1 ]]
-            install -Dm755 \
-              "$execroot/${outputs[0]}" \
-              "artifacts/$triple/$binary_name"
-          }
-
-          stage x86_64-linux-gnu //:watchman-x86_64-linux-gnu watchman
-          stage aarch64-linux-gnu //:watchman-aarch64-linux-gnu watchman
-          stage aarch64-apple-darwin //:watchman-aarch64-apple-darwin watchman
-          stage x86_64-windows-gnu //:watchman-x86_64-windows-gnu watchman.exe
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-x86_64-linux-gnu
-          path: artifacts/x86_64-linux-gnu/watchman
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-aarch64-linux-gnu
-          path: artifacts/aarch64-linux-gnu/watchman
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-aarch64-apple-darwin
-          path: artifacts/aarch64-apple-darwin/watchman
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-x86_64-windows-gnu
-          path: artifacts/x86_64-windows-gnu/watchman.exe
-          if-no-files-found: error
-
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+    - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+      with:
+        bazelisk-cache: true
+        cache-save: "${{ github.event_name == 'push' }}"
+        disk-cache: watchman-retained-linux-arm64
+        repository-cache: true
+    - name: Build and smoke Linux ARM64
+      shell: bash
+      run: |
+        set -euo pipefail
+        bazel build -c opt //:watchman-aarch64-linux-gnu
+        mapfile -t outputs < <(bazel cquery -c opt --output=files //:watchman-aarch64-linux-gnu)
+        [[ ${#outputs[@]} -eq 1 ]]
+        bash tests/watchman_smoke_test.sh "$PWD/${outputs[0]}"
   smoke-windows-msvc:
     name: Smoke test (x86_64-windows-msvc)
     runs-on: windows-2022
@@ -123,89 +41,47 @@ jobs:
     env:
       USE_BAZEL_VERSION: 9.2.0
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+    - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+      with:
+        bazelisk-cache: true
+        cache-save: "${{ github.event_name != 'pull_request' }}"
+        disk-cache: "${{ github.workflow }}-windows-msvc"
+        repository-cache: true
+    - name: Build and smoke test with MSVC
+      shell: pwsh
+      run: |
+        $registry = "file:///" + $env:GITHUB_WORKSPACE.Replace("\", "/") + "/bcr"
+        $bazelArgs = @(
+          "--registry=$registry"
+          "--registry=https://bcr.bazel.build"
+          "--incompatible_autoload_externally=+@rules_cc"
+        )
 
-      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
-        with:
-          bazelisk-cache: true
-          cache-save: ${{ github.event_name != 'pull_request' }}
-          disk-cache: ${{ github.workflow }}-windows-msvc
-          repository-cache: true
-
-      - name: Build and smoke test with MSVC
-        shell: pwsh
-        run: |
-          $registry = "file:///" + $env:GITHUB_WORKSPACE.Replace("\", "/") + "/bcr"
-          $bazelArgs = @(
-            "--registry=$registry"
-            "--registry=https://bcr.bazel.build"
-            "--incompatible_autoload_externally=+@rules_cc"
-          )
-
-          Push-Location tests/bcr
-          try {
-            bazel build @bazelArgs "@watchman//:watchman"
-            if ($LASTEXITCODE -ne 0) {
-              throw "MSVC build failed with code $LASTEXITCODE"
-            }
-
-            $outputs = bazel cquery @bazelArgs --output=files "@watchman//:watchman"
-            if ($LASTEXITCODE -ne 0) {
-              throw "MSVC output query failed with code $LASTEXITCODE"
-            }
-
-            $relativeBinary = @($outputs | Where-Object { $_ -like "*.exe" })
-            if ($relativeBinary.Count -ne 1) {
-              throw "expected one Watchman executable, got $($relativeBinary.Count)"
-            }
-
-            $executionRoot = bazel info execution_root
-            if ($LASTEXITCODE -ne 0) {
-              throw "Bazel execution-root query failed with code $LASTEXITCODE"
-            }
-            $watchman = Join-Path $executionRoot $relativeBinary[0]
-          } finally {
-            Pop-Location
+        Push-Location tests/bcr
+        try {
+          bazel build @bazelArgs "@watchman//:watchman"
+          if ($LASTEXITCODE -ne 0) {
+            throw "MSVC build failed with code $LASTEXITCODE"
           }
 
-          ./tests/watchman_smoke_test.ps1 -Watchman $watchman
+          $outputs = bazel cquery @bazelArgs --output=files "@watchman//:watchman"
+          if ($LASTEXITCODE -ne 0) {
+            throw "MSVC output query failed with code $LASTEXITCODE"
+          }
 
-  smoke:
-    name: Smoke test (${{ matrix.triple }})
-    needs: build
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - triple: x86_64-linux-gnu
-            runner: ubuntu-24.04
-          - triple: aarch64-linux-gnu
-            runner: ubuntu-24.04-arm
-          - triple: aarch64-apple-darwin
-            runner: macos-15
-          - triple: x86_64-windows-gnu
-            runner: windows-2022
+          $relativeBinary = @($outputs | Where-Object { $_ -like "*.exe" })
+          if ($relativeBinary.Count -ne 1) {
+            throw "expected one Watchman executable, got $($relativeBinary.Count)"
+          }
 
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+          $executionRoot = bazel info execution_root
+          if ($LASTEXITCODE -ne 0) {
+            throw "Bazel execution-root query failed with code $LASTEXITCODE"
+          }
+          $watchman = Join-Path $executionRoot $relativeBinary[0]
+        } finally {
+          Pop-Location
+        }
 
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: watchman-${{ matrix.triple }}
-          path: artifacts
-
-      - name: Run smoke test
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          binary="$PWD/artifacts/watchman"
-          chmod +x "$binary"
-          tests/watchman_smoke_test.sh "$binary"
-
-      - name: Run Windows smoke test
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          & ./tests/watchman_smoke_test.ps1 -Watchman "$PWD/artifacts/watchman.exe"
+        ./tests/watchman_smoke_test.ps1 -Watchman $watchman

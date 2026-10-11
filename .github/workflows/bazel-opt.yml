@@ -1,126 +1,51 @@
-name: bazel-opt
-
-on:
+---
+name: Publish Buildkite distributions
+'on':
   release:
     types:
-      - published
+    - published
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing release tag to build and update
-        required: false
+        description: Existing release tag produced by Buildkite
+        required: true
         type: string
-
 permissions:
   contents: read
-
 jobs:
-  build:
-    name: Build optimized binaries
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
-          ref: ${{ github.event.release.tag_name || inputs.tag || github.sha }}
-
-      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # v0.19.0
-        with:
-          bazelisk-cache: true
-          cache-save: true
-          disk-cache: ${{ github.workflow }}-linux-x64
-          repository-cache: true
-
-      - name: Build optimized distributions
-        run: |
-          set -euo pipefail
-
-          targets=(
-            //:watchman-x86_64-linux-gnu
-            //:watchman-aarch64-linux-gnu
-            //:watchman-aarch64-apple-darwin
-            //:watchman-x86_64-windows-gnu
-          )
-          bazel build --compilation_mode=opt "${targets[@]}"
-
-          execroot="$(bazel info execution_root)"
-          stage() {
-            local target="$1"
-            local output_name="$2"
-            local outputs=()
-
-            mapfile -t outputs < <(
-              bazel cquery --compilation_mode=opt --output=files "$target"
-            )
-            [[ "${#outputs[@]}" -eq 1 ]]
-            install -Dm755 \
-              "$execroot/${outputs[0]}" \
-              "artifacts/$output_name"
-          }
-
-          stage //:watchman-x86_64-linux-gnu watchman-x86_64-linux-gnu
-          stage //:watchman-aarch64-linux-gnu watchman-aarch64-linux-gnu
-          stage //:watchman-aarch64-apple-darwin watchman-aarch64-apple-darwin
-          stage //:watchman-x86_64-windows-gnu watchman-x86_64-windows-gnu.exe
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-x86_64-linux-gnu-opt
-          path: artifacts/watchman-x86_64-linux-gnu
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-aarch64-linux-gnu-opt
-          path: artifacts/watchman-aarch64-linux-gnu
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-aarch64-apple-darwin-opt
-          path: artifacts/watchman-aarch64-apple-darwin
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: watchman-x86_64-windows-gnu-opt
-          path: artifacts/watchman-x86_64-windows-gnu.exe
-          if-no-files-found: error
-
   publish:
-    name: Publish release binaries
-    needs: build
-    if: ${{ github.event_name == 'release' || inputs.tag != '' }}
-    runs-on: ubuntu-24.04
+    name: Verify ARM64 and publish existing artifacts
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
     permissions:
       contents: write
+    env:
+      RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag }}"
+      GH_TOKEN: "${{ github.token }}"
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          pattern: watchman-*-opt
-          path: artifacts
-          merge-multiple: true
-
-      - name: Upload release binaries
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
-        run: |
-          set -euo pipefail
-
-          assets=(
-            artifacts/watchman-x86_64-linux-gnu
-            artifacts/watchman-aarch64-linux-gnu
-            artifacts/watchman-aarch64-apple-darwin
-            artifacts/watchman-x86_64-windows-gnu.exe
-          )
-          for asset in "${assets[@]}"; do
-            [[ -f "$asset" ]]
-          done
-
-          gh release upload \
-            "$RELEASE_TAG" \
-            "${assets[@]}" \
-            --clobber \
-            --repo "$GITHUB_REPOSITORY"
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+        ref: "${{ github.event.release.tag_name || inputs.tag }}"
+    - name: Wait for verified Buildkite outputs
+      run: python3 -B .github/scripts/download-release.py
+    - name: Native ARM64 artifact smoke
+      run: |-
+        chmod +x release/watchman-aarch64-linux-gnu
+        bash tests/watchman_smoke_test.sh "$PWD/release/watchman-aarch64-linux-gnu"
+    - name: Publish verified assets
+      run: |
+        set -euo pipefail
+        python3 - <<'VERIFY'
+        import importlib.util, subprocess
+        from pathlib import Path
+        spec = importlib.util.spec_from_file_location('artifacts', '.buildkite/artifacts.py')
+        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+        m.verify(Path('release'), {'commit': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'pipeline': 'watchman'})
+        VERIFY
+        python3 - <<'UPLOAD'
+        import json, os, subprocess
+        assets = json.load(open('.buildkite/assets.json'))
+        subprocess.run(['gh','release','upload',os.environ['RELEASE_TAG'],*['release/'+name for name in assets],'--clobber'],check=True)
+        UPLOAD

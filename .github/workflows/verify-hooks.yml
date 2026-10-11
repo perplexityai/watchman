@@ -1,71 +1,19 @@
-name: Verify Commit Hooks
-
-on:
-  pull_request:
-    types:
-      - edited
-      - opened
-      - reopened
-      - synchronize
-  merge_group:
+---
+name: Buildkite migration tests
+'on':
   push:
     branches:
-      - main
-
+    - main
+  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
-
 jobs:
-  verify-hooks:
-    runs-on: ubuntu-latest
-
+  test:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          fetch-depth: 100
-
-      - name: Setup Node.js
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          cache: npm
-          node-version: '24'
-
-      - name: Install Hook Dependencies
-        run: npm ci
-
-      - name: Validate Pull Request Title
-        if: github.event_name == 'pull_request'
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-        run: |
-          set -euo pipefail
-          message_file="$(mktemp)"
-          trap 'rm -f "$message_file"' EXIT
-          printf '%s\n' "$PR_TITLE" > "$message_file"
-          npx --no-install lefthook run commit-msg "$message_file"
-
-      - name: Validate Pull Request Commits
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: |
-          set -euo pipefail
-          git fetch --no-tags origin "$BASE_REF"
-
-          message_file="$(mktemp)"
-          trap 'rm -f "$message_file"' EXIT
-          while IFS= read -r commit; do
-            echo "Validating commit: $(git log -1 --oneline "$commit")"
-            git log -1 --format=%B "$commit" > "$message_file"
-            npx --no-install lefthook run commit-msg "$message_file"
-          done < <(git rev-list "origin/$BASE_REF..HEAD")
-
-      - name: Validate Head Commit
-        if: github.event_name != 'pull_request'
-        run: |
-          set -euo pipefail
-          message_file="$(mktemp)"
-          trap 'rm -f "$message_file"' EXIT
-          git log -1 --format=%B HEAD > "$message_file"
-          npx --no-install lefthook run commit-msg "$message_file"
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+    - run: |-
+        python3 -B .buildkite/artifacts_test.py
+        python3 -B .github/scripts/test-buildkite-release-gate.py
+          python3 tests/validate_bcr.py
