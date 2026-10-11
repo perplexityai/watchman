@@ -96,3 +96,7 @@ Commit messages and pull request titles use Conventional Commits.
 Copyright 2026 Perplexity AI.
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+## CI and releases
+
+See [.buildkite/README.md](.buildkite/README.md) for the Buildkite migration and retained GHA coverage.

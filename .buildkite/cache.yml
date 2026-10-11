@@ -1,0 +1,14 @@
+caches:
+  - name: bazel
+    cache_key:
+      - watchman-bazel-v2
+      - agent: pipeline
+      - agent: os
+      - agent: arch
+      - env: USE_BAZEL_VERSION
+      - agent: step
+        fallback_limit: true
+      - env: BUILDKITE_COMMIT
+    target_paths:
+      - /tmp/watchman-ci/repository
+      - /tmp/watchman-ci/disk

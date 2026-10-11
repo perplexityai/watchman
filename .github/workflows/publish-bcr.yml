@@ -17,11 +17,19 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-24.04
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.release.tag_name || github.sha }}
 
+      - name: Wait for exact main Buildkite checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: python3 -B .github/scripts/buildkite-release-gate.py
       - name: Validate overlay
         run: python3 tests/validate_bcr.py
 
