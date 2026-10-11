@@ -30,7 +30,7 @@ try {
     foreach ($key in $expected.Keys) {
         if ($manifest.$key -cne $expected[$key]) { throw "Artifact identity mismatch: $key" }
     }
-    $files = @(Get-Content -Raw .buildkite/assets.json | ConvertFrom-Json)
+    $files = ConvertFrom-Json -InputObject (Get-Content -Raw .buildkite/assets.json)
     if (Compare-Object -CaseSensitive $files @($manifest.files.PSObject.Properties.Name)) { throw 'Unexpected manifest files' }
     if (Compare-Object -CaseSensitive @($files + 'buildkite-release.json') @((Get-ChildItem -LiteralPath $directory).Name)) { throw 'Unexpected artifact files' }
     foreach ($name in $files) {
