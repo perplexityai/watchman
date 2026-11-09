@@ -99,4 +99,4 @@ Licensed under the [Apache License 2.0](LICENSE).
 
 ## CI and releases
 
-See [.buildkite/README.md](.buildkite/README.md) for the Buildkite migration and retained GHA coverage.
+See [.github/ci/README.md](.github/ci/README.md) for GitHub Actions coverage and release checks.

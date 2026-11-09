@@ -12,6 +12,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -25,11 +26,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name || github.sha }}
 
-      - name: Wait for exact main Buildkite checks
+      - name: Wait for exact main GitHub Actions checks
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: python3 -B .github/scripts/buildkite-release-gate.py
+        run: python3 -B .github/scripts/gha-release-gate.py
       - name: Validate overlay
         run: python3 tests/validate_bcr.py
 

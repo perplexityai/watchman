@@ -4,3 +4,5 @@
 __pycache__/
 /tests/bcr/MODULE.bazel.lock
 /tests/bcr/bazel-*
+
+.ci-artifacts/
