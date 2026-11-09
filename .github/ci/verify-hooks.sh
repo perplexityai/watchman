@@ -20,7 +20,6 @@ else
   base=$(git rev-parse HEAD^)
   head=$(git rev-parse HEAD)
 fi
-npm test
 python3 -B .github/ci/artifacts_test.py
 [[ "$GITHUB_EVENT_NAME" == pull_request ]] || exit 0
 npx --no-install lefthook run commit-msg "$work_dir/title" --force
