@@ -24,10 +24,10 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Wait for exact main Buildkite checks
+      - name: Wait for exact main GitHub Actions checks
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 -B .github/scripts/buildkite-release-gate.py
+        run: python3 -B .github/scripts/gha-release-gate.py
 
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
         with:

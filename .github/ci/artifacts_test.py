@@ -18,7 +18,7 @@ class ArtifactTest(unittest.TestCase):
         self.write_manifest()
 
     def write_manifest(self):
-        (self.root / "buildkite-release.json").write_text(json.dumps(self.manifest))
+        (self.root / "gha-release.json").write_text(json.dumps(self.manifest))
 
     def test_valid(self):
         artifacts.verify(self.root, self.expected)
@@ -60,7 +60,7 @@ class ArtifactTest(unittest.TestCase):
             artifacts.verify(self.root, self.expected)
 
     def test_manifest_symlink(self):
-        marker = self.root / "buildkite-release.json"
+        marker = self.root / "gha-release.json"
         outside = self.root.parent / (self.root.name + "-manifest")
         outside.write_text(marker.read_text())
         self.addCleanup(outside.unlink)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source .buildkite/setup.sh
+source .github/ci/setup.sh
 python3 tests/validate_bcr.py
 cd tests/bcr
 bazel build \

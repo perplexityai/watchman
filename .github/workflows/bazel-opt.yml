@@ -1,5 +1,5 @@
 ---
-name: Publish Buildkite distributions
+name: Publish distributions
 'on':
   release:
     types:
@@ -7,45 +7,81 @@ name: Publish Buildkite distributions
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing release tag produced by Buildkite
+        description: Existing release tag
         required: true
         type: string
 permissions:
+  actions: read
   contents: read
 jobs:
-  publish:
-    name: Verify ARM64 and publish existing artifacts
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 120
+  gate:
+    runs-on: ubuntu-latest
     permissions:
-      contents: write
-    env:
-      RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag }}"
-      GH_TOKEN: "${{ github.token }}"
+      contents: read
+      actions: read
     steps:
-    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
-        persist-credentials: false
         fetch-depth: 0
         ref: "${{ github.event.release.tag_name || inputs.tag }}"
-    - name: Wait for verified Buildkite outputs
-      run: python3 -B .github/scripts/download-release.py
-    - name: Native ARM64 artifact smoke
+    - env:
+        GH_TOKEN: "${{ github.token }}"
+        RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag }}"
+      run: python3 .github/scripts/gha-release-gate.py
+      id: gate
+    outputs:
+      commit: "${{ steps.gate.outputs.commit }}"
+  build:
+    needs: gate
+    uses: "./.github/workflows/ci.yml"
+    with:
+      ref: "${{ needs.gate.outputs.commit }}"
+  arm64:
+    name: Release smoke / Linux ARM64
+    needs:
+    - build
+    - gate
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: "${{ needs.gate.outputs.commit }}"
+    - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      with:
+        name: distributions
+        path: release
+    - env:
+        CI_RUN_ID: "${{ github.run_id }}-${{ github.run_attempt }}"
       run: |-
+        python3 .github/ci/artifacts.py verify release
         chmod +x release/watchman-aarch64-linux-gnu
         bash tests/watchman_smoke_test.sh "$PWD/release/watchman-aarch64-linux-gnu"
+  publish:
+    needs:
+    - build
+    - arm64
+    - gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: "${{ needs.gate.outputs.commit }}"
+    - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      with:
+        name: distributions
+        path: release
     - name: Publish verified assets
-      run: |
-        set -euo pipefail
-        python3 - <<'VERIFY'
-        import importlib.util, subprocess
-        from pathlib import Path
-        spec = importlib.util.spec_from_file_location('artifacts', '.buildkite/artifacts.py')
-        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-        m.verify(Path('release'), {'commit': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'pipeline': 'watchman'})
-        VERIFY
+      env:
+        CI_RUN_ID: "${{ github.run_id }}-${{ github.run_attempt }}"
+        GH_TOKEN: "${{ github.token }}"
+        RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag }}"
+      run: |-
+        python3 .github/ci/artifacts.py verify release
         python3 - <<'UPLOAD'
         import json, os, subprocess
-        assets = json.load(open('.buildkite/assets.json'))
-        subprocess.run(['gh','release','upload',os.environ['RELEASE_TAG'],*['release/'+name for name in assets],'--clobber'],check=True)
+        assets = json.load(open('.github/ci/assets.json'))
+        subprocess.run(['gh', 'release', 'upload', os.environ['RELEASE_TAG'],
+                        *['release/' + name for name in assets], '--clobber'], check=True)
         UPLOAD
